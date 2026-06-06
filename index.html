@@ -1,39 +1,168 @@
 <!DOCTYPE html>
-<html lang="pt">
+<html lang="pt" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Material de Apoio</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>Material de Apoio | Central de Conteúdos</title>
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338bdf8'%3E%3Cpath d='M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM5 7h5v2H5V7zm0 4h5v2H5v-2zm14 6H5v-2h14v2zm0-4h-7v-2h7v2zm0-4h-7V7h7v2z'/%3E%3C/svg%3E">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-principal: #0B0F19;
+            --bg-card: #111827;
+            --bg-item: #1F2937;
+            --bg-item-hover: #374151;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #F9FAFB;
+            --text-secondary: #9CA3AF;
+            --accent-color: #38BDF8;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-principal);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }
+
+        .dashboard-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+
+        .header-accent {
+            color: var(--accent-color);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }
+
+        .custom-list-item {
+            background-color: var(--bg-item);
+            border: 1px solid var(--border-color);
+            border-radius: 12px !important;
+            color: var(--text-primary);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 12px;
+        }
+
+        .custom-list-item:hover {
+            background-color: var(--bg-item-hover);
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.1);
+        }
+
+        .icon-box {
+            background-color: rgba(56, 189, 248, 0.1);
+            padding: 8px;
+            border-radius: 8px;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .custom-list-item:hover .icon-box {
+            background-color: var(--accent-color);
+            color: var(--bg-principal);
+        }
+        
+        .badge-sync {
+            font-size: 0.75rem;
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #34D399;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 6px 12px;
+            border-radius: 50px;
+        }
+    </style>
 </head>
-<body class="bg-light">
+<body>
     <div class="container my-5">
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <h1 class="card-title h3 mb-4 text-primary">Material de Apoio</h1>
-                <p class="text-muted">Links atualizados automaticamente via GitHub Actions:</p>
-                <div class="list-group">
-                    <a href="#main" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                        Skip to content
-                        <span class="badge bg-secondary rounded-pill">→</span>
-                    </a>
-                    <a href="https://www.notion.so/Semana-01-BD-36933f83b4dd8063b2fcce0b405ff218?source=copy_link" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                        https://www.notion.so/Semana-01-BD-36933f83b4dd8063b2fcce0b405ff218?source=copy_link
-                        <span class="badge bg-secondary rounded-pill">→</span>
-                    </a>
-                    <a href="https://app.notion.com/p/Semana-02-BD-37033f83b4dd80df9814c0396b564ff7?source=copy_link" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                        https://app.notion.com/p/Semana-02-BD-37033f83b4dd80df9814c0396b564ff7?source=copy_link
-                        <span class="badge bg-secondary rounded-pill">→</span>
-                    </a>
-                    <a href="https://app.notion.com/p/Semana-03-BD-37733f83b4dd80a3bfade06f4dcc1178?source=copy_link" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                        https://app.notion.com/p/Semana-03-BD-37733f83b4dd80a3bfade06f4dcc1178?source=copy_link
-                        <span class="badge bg-secondary rounded-pill">→</span>
-                    </a>
-                    <a href="https://www.notion.so/Semana-07-36333f83b4dd80e6a0aed390c506c0b0?source=copy_link" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                        https://www.notion.so/Semana-07-36333f83b4dd80e6a0aed390c506c0b0?source=copy_link
-                        <span class="badge bg-secondary rounded-pill">→</span>
-                    </a>
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-9">
+                
+                <div class="dashboard-card p-4 p-md-5">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+                        <div>
+                            <h1 class="h2 header-accent mb-1">Material de Apoio</h1>
+                            <p class="text-muted small mb-0">Repositório de Recursos Estáticos</p>
+                        </div>
+                        <div class="align-self-start align-self-sm-center">
+                            <span class="badge-sync d-inline-flex align-items-center gap-1.5">
+                                <span class="spinner-grow spinner-grow-sm text-success" style="animation-duration: 3s;" role="status"></span>
+                                Sincronizado via CI/CD
+                            </span>
+                        </div>
+                    </div>
+
+                    <p class="text-secondary small mb-4">Selecione o módulo de apoio abaixo para aceder diretamente à documentação estruturada no Notion:</p>
+                    
+                    <div class="list-group list-group-flush">
+                        <a href="https://www.notion.so/Semana-01-BD-36933f83b4dd8063b2fcce0b405ff218?source=copy_link" target="_blank" class="list-group-item custom-list-item d-flex justify-content-between align-items-center p-3 text-decoration-none">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="text-muted small fw-semibold text-opacity-50 ps-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
+                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
+                                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
+                                    </svg>
+                                </div>
+                                <span class="fw-semibold text-light">Semana 01 BD</span>
+                            </div>
+                            <div class="icon-box">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
+                                </svg>
+                            </div>
+                        </a>
+                        <a href="https://app.notion.com/p/Semana-02-BD-37033f83b4dd80df9814c0396b564ff7?source=copy_link" target="_blank" class="list-group-item custom-list-item d-flex justify-content-between align-items-center p-3 text-decoration-none">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="text-muted small fw-semibold text-opacity-50 ps-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
+                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
+                                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
+                                    </svg>
+                                </div>
+                                <span class="fw-semibold text-light">Semana 02 BD</span>
+                            </div>
+                            <div class="icon-box">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
+                                </svg>
+                            </div>
+                        </a>
+                        <a href="https://app.notion.com/p/Semana-03-BD-37733f83b4dd80a3bfade06f4dcc1178?source=copy_link" target="_blank" class="list-group-item custom-list-item d-flex justify-content-between align-items-center p-3 text-decoration-none">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="text-muted small fw-semibold text-opacity-50 ps-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
+                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
+                                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
+                                    </svg>
+                                </div>
+                                <span class="fw-semibold text-light">Semana 03 BD</span>
+                            </div>
+                            <div class="icon-box">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
+                                </svg>
+                            </div>
+                        </a>
+                    </div>
+                    
                 </div>
+                
             </div>
         </div>
     </div>
