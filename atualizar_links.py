@@ -4,7 +4,6 @@ from bs4 import BeautifulSoup
 
 async def extrair_dados_notion(url):
     async with async_playwright() as p:
-        # Lança o navegador com argumentos ideais para ambientes de CI (como o GitHub)
         browser = await p.chromium.launch(headless=True)
         context = await browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -12,18 +11,23 @@ async def extrair_dados_notion(url):
         page = await context.new_page()
         
         print("A carregar a página do Notion...")
-        await page.goto(url, wait_until="networkidle")
         
-        # Aguarda que o conteúdo principal do Notion seja renderizado
+        # MODIFICAÇÃO AQUI: Mudamos para "domcontentloaded" para não travar na rede
+        await page.goto(url, wait_until="domcontentloaded")
+        
+        # Aguarda que a estrutura interna do Notion apareça na tela
         try:
-            await page.wait_for_selector(".notion-page-content", timeout=15000)
-        except Exception:
-            print("Aviso: Tempo limite esgotado, tentando processar o HTML parcial.")
+            # Aumentamos o tempo para garantir que o JavaScript pesadão do Notion termine de renderizar
+            await page.wait_for_selector(".notion-page-content", timeout=20000)
+            # Dá mais 2 segundos extras de margem só para garantir a renderização total dos blocos
+            await page.wait_for_timeout(2000)
+        except Exception as e:
+            print(f"Aviso: Tempo limite do seletor esgotado ou bloco não encontrado. Detalhe: {e}")
 
         html_content = await page.content()
         await browser.close()
         return html_content
-
+    
 def processar_html(html):
     soup = BeautifulSoup(html, 'html.parser')
     
