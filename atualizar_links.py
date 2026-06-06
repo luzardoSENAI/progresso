@@ -1,9 +1,11 @@
 import asyncio
+import re
 from playwright.async_api import async_playwright
 from bs4 import BeautifulSoup
 
 async def extrair_dados_notion(url):
     async with async_playwright() as p:
+        # Lança o navegador com argumentos ideais para ambientes locais e de CI (GitHub)
         browser = await p.chromium.launch(headless=True)
         context = await browser.new_context(
             user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
@@ -12,14 +14,13 @@ async def extrair_dados_notion(url):
         
         print("A carregar a página do Notion...")
         
-        # MODIFICAÇÃO AQUI: Mudamos para "domcontentloaded" para não travar na rede
+        # Carrega o HTML base ignorando conexões infinitas de rede em segundo plano
         await page.goto(url, wait_until="domcontentloaded")
         
-        # Aguarda que a estrutura interna do Notion apareça na tela
+        # Aguarda que a estrutura interna do Notion apareça no ecrã
         try:
-            # Aumentamos o tempo para garantir que o JavaScript pesadão do Notion termine de renderizar
             await page.wait_for_selector(".notion-page-content", timeout=20000)
-            # Dá mais 2 segundos extras de margem só para garantir a renderização total dos blocos
+            # Pausa de segurança de 2 segundos para renderização total do JavaScript
             await page.wait_for_timeout(2000)
         except Exception as e:
             print(f"Aviso: Tempo limite do seletor esgotado ou bloco não encontrado. Detalhe: {e}")
@@ -27,58 +28,202 @@ async def extrair_dados_notion(url):
         html_content = await page.content()
         await browser.close()
         return html_content
-    
+
 def processar_html(html):
     soup = BeautifulSoup(html, 'html.parser')
     
+    # Captura o título principal da página do Notion
     titulo_pagina = soup.find("h1") or soup.find(class_="notion-page-block")
     titulo_texto = titulo_pagina.get_text().strip() if titulo_pagina else "Material de Apoio"
-    print(f"Título identificado: {titulo_texto}")
-
+    
     links_encontrados = []
     
-    # Captura os links estruturados do Notion
     for a_tag in soup.find_all("a", href=True):
         href = a_tag['href']
-        texto_link = a_tag.get_text().strip()
+        texto_link = " ".join(a_tag.get_text().split()).strip()
         
-        if texto_link and not href.startswith(("/login", "/signup", "https://www.notion.so/product")):
+        # Filtros de segurança: ignora links de sistema do Notion e ruídos
+        se_valido = (
+            texto_link and 
+            "Skip to content" not in texto_link and
+            not href.startswith(("/login", "/signup", "https://www.notion.so/product"))
+        )
+        
+        if se_valido:
             if href.startswith("/"):
                 href = f"https://notion.so{href}"
             
-            links_encontrados.append({
-                "titulo": texto_link,
-                "link": href
-            })
+            # TRATAMENTO AVANÇADO DE TÍTULO: 
+            # Se o texto for um link bruto ou contiver IDs pesados, extraímos da URL
+            if texto_link.startswith(("http://", "https://")) or (len(texto_link) > 30 and "-" in texto_link):
+                parte_limpa = href.split('/')[-1].split('?')[0]
+            else:
+                parte_limpa = texto_link
+
+            # Remove o ID hexadecimal de 32 caracteres que o Notion anexa no fim dos nomes
+            parte_limpa = re.sub(r'-?[a-f0-9]{32}', '', parte_limpa)
+            
+            # Substitui traços/sublinhados por espaços e limpa pontuações repetidas
+            titulo_limpo = parte_limpa.replace('-', ' ').replace('_', ' ').strip()
+            
+            # Capitalização inteligente (Garante siglas como "BD" sempre em maiúsculas)
+            titulo_limpo = " ".join([palavra.upper() if palavra.lower() in ['bd', 'it', 'ai', 'io', 'ui', 'ux'] else palavra.capitalize() for palavra in titulo_limpo.split()])
+            
+            # Fallback de segurança
+            if not titulo_limpo:
+                titulo_limpo = "Subpágina de Conteúdo"
+
+            # Evita links duplicados na lista final
+            if not any(item['link'] == href for item in links_encontrados):
+                links_encontrados.append({
+                    "titulo": titulo_limpo,
+                    "link": href
+                })
             
     return titulo_texto, links_encontrados
 
 def gerar_pagina_estatica(titulo_projeto, itens):
+    # Favicon em formato SVG Inline (Livro Digital Azul Néon)
+    favicon_svg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338bdf8'%3E%3Cpath d='M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM5 7h5v2H5V7zm0 4h5v2H5v-2zm14 6H5v-2h14v2zm0-4h-7v-2h7v2zm0-4h-7V7h7v2z'/%3E%3C/svg%3E"
+
     html_template = f"""<!DOCTYPE html>
-<html lang="pt">
+<html lang="pt" data-bs-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{titulo_projeto}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>{titulo_projeto} | Central de Conteúdos</title>
+    <link rel="icon" type="image/svg+xml" href="{favicon_svg}">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        :root {{
+            --bg-principal: #0B0F19;
+            --bg-card: #111827;
+            --bg-item: #1F2937;
+            --bg-item-hover: #374151;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --text-primary: #F9FAFB;
+            --text-secondary: #9CA3AF;
+            --accent-color: #38BDF8;
+        }}
+
+        body {{
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-principal);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+        }}
+
+        .dashboard-card {{
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }}
+
+        .header-accent {{
+            color: var(--accent-color);
+            font-weight: 700;
+            letter-spacing: -0.025em;
+        }}
+
+        .custom-list-item {{
+            background-color: var(--bg-item);
+            border: 1px solid var(--border-color);
+            border-radius: 12px !important;
+            color: var(--text-primary);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 12px;
+        }}
+
+        .custom-list-item:hover {{
+            background-color: var(--bg-item-hover);
+            color: #FFFFFF;
+            transform: translateY(-2px);
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.1);
+        }}
+
+        .icon-box {{
+            background-color: rgba(56, 189, 248, 0.1);
+            padding: 8px;
+            border-radius: 8px;
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }}
+
+        .custom-list-item:hover .icon-box {{
+            background-color: var(--accent-color);
+            color: var(--bg-principal);
+        }}
+        
+        .badge-sync {{
+            font-size: 0.75rem;
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #34D399;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            padding: 6px 12px;
+            border-radius: 50px;
+        }}
+    </style>
 </head>
-<body class="bg-light">
+<body>
     <div class="container my-5">
-        <div class="card shadow-sm mb-4">
-            <div class="card-body">
-                <h1 class="card-title h3 mb-4 text-primary">{titulo_projeto}</h1>
-                <p class="text-muted">Links atualizados automaticamente via GitHub Actions:</p>
-                <div class="list-group">"""
+        <div class="row justify-content-center">
+            <div class="col-lg-7 col-md-9">
+                
+                <div class="dashboard-card p-4 p-md-5">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
+                        <div>
+                            <h1 class="h2 header-accent mb-1">{titulo_projeto}</h1>
+                            <p class="text-muted small mb-0">Repositório de Recursos Estáticos</p>
+                        </div>
+                        <div class="align-self-start align-self-sm-center">
+                            <span class="badge-sync d-inline-flex align-items-center gap-1.5">
+                                <span class="spinner-grow spinner-grow-sm text-success" style="animation-duration: 3s;" role="status"></span>
+                                Sincronizado via CI/CD
+                            </span>
+                        </div>
+                    </div>
+
+                    <p class="text-secondary small mb-4">Selecione o módulo de apoio abaixo para aceder diretamente à documentação estruturada no Notion:</p>
+                    
+                    <div class="list-group list-group-flush">"""
     
     for item in itens:
         html_template += f"""
-                    <a href="{item['link']}" target="_blank" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
-                        {item['titulo']}
-                        <span class="badge bg-secondary rounded-pill">→</span>
-                    </a>"""
+                        <a href="{item['link']}" target="_blank" class="list-group-item custom-list-item d-flex justify-content-between align-items-center p-3 text-decoration-none">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="text-muted small fw-semibold text-opacity-50 ps-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
+                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
+                                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
+                                    </svg>
+                                </div>
+                                <span class="fw-semibold text-light">{item['titulo']}</span>
+                            </div>
+                            <div class="icon-box">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
+                                </svg>
+                            </div>
+                        </a>"""
                     
     html_template += """
+                    </div>
+                    
                 </div>
+                
             </div>
         </div>
     </div>
@@ -87,15 +232,16 @@ def gerar_pagina_estatica(titulo_projeto, itens):
     
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html_template)
-    print("Ficheiro 'index.html' atualizado!")
+    print("Sucesso! Painel Premium em modo Dark gerado em 'index.html'.")
 
-# Execução principal
 if __name__ == "__main__":
     url_notion = "https://app.notion.com/p/Material-de-Apoio-3e8e3775cf2e46d0a7515f7cf3f7b53f"
+    
+    # Roda o coletor assíncrono
     html_renderizado = asyncio.run(extrair_dados_notion(url_notion))
     titulo, lista_links = processar_html(html_renderizado)
 
     if lista_links:
         gerar_pagina_estatica(titulo, lista_links)
     else:
-        print("Erro: Nenhum link extraído. Certifica-te de que a página está partilhada publicamente.")
+        print("Erro: Nenhum link extraído. Verifica as configurações públicas da página do Notion.")
