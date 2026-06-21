@@ -5,12 +5,16 @@ on:
     branches:
       - main
   schedule:
-    - cron: '0 6 * * *' # Executa todos os dias às 06:00 AM UTC (opcional)
-  workflow_dispatch: # Permite que executes manualmente pelo painel do GitHub
+    - cron: '0 6 * * *' # Executa todos os dias às 06:00 AM UTC
+  workflow_dispatch: # Permite executar manualmente pelo painel do GitHub
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    
+    # CRUCIAL: Concede permissão para o Action fazer push de volta para o repositório
+    permissions:
+      contents: write
 
     steps:
     - name: Checkout do código
