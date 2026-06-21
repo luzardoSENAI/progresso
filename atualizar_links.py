@@ -5,25 +5,32 @@ from bs4 import BeautifulSoup
 
 async def extrair_dados_notion(url):
     async with async_playwright() as p:
-        # Lança o navegador com argumentos ideais para ambientes locais e de CI (GitHub)
-        browser = await p.chromium.launch(headless=True)
+        # Argumentos cruciais para evitar bloqueios e funcionar perfeitamente em CI/CD
+        browser = await p.chromium.launch(
+            headless=True,
+            args=["--no-sandbox", "--disable-setuid-sandbox", "--disable-gl-drawing-for-tests"]
+        )
         context = await browser.new_context(
-            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+            user_agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            viewport={"width": 1280, "height": 800}
         )
         page = await context.new_page()
         
         print("A carregar a página do Notion...")
         
-        # Carrega o HTML base ignorando conexões infinitas de rede em segundo plano
-        await page.goto(url, wait_until="domcontentloaded")
-        
-        # Aguarda que a estrutura interna do Notion apareça no ecrã
+        # Alterado para 'networkidle' para garantir que todo o JavaScript do Notion terminou de rodar
         try:
-            await page.wait_for_selector(".notion-page-content", timeout=20000)
-            # Pausa de segurança de 2 segundos para renderização total do JavaScript
-            await page.wait_for_timeout(2000)
+            await page.goto(url, wait_until="networkidle", timeout=45000)
+        except Exception:
+            print("Aviso: Tempo limite de rede atingido, tentando processar o que foi carregado...")
+
+        # Aguarda um seletor mais genérico de texto ou a própria página principal estabilizar
+        try:
+            await page.wait_for_selector(".notion-scroller", timeout=20000)
+            # Pausa de segurança ligeiramente maior para o ecossistema pesado do Notion
+            await page.wait_for_timeout(4000)
         except Exception as e:
-            print(f"Aviso: Tempo limite do seletor esgotado ou bloco não encontrado. Detalhe: {e}")
+            print(f"Aviso: Seletor não encontrado. O Notion pode ter mudado a classe interna. Detalhe: {e}")
 
         html_content = await page.content()
         await browser.close()
@@ -32,8 +39,8 @@ async def extrair_dados_notion(url):
 def processar_html(html):
     soup = BeautifulSoup(html, 'html.parser')
     
-    # Captura o título principal da página do Notion
-    titulo_pagina = soup.find("h1") or soup.find(class_="notion-page-block")
+    # Captura o título (seletor atualizado para os padrões do Notion)
+    titulo_pagina = soup.find("h1") or soup.find(class_="notion-page-block") or soup.find(class_="notion-title")
     titulo_texto = titulo_pagina.get_text().strip() if titulo_pagina else "Material de Apoio"
     
     links_encontrados = []
@@ -42,48 +49,45 @@ def processar_html(html):
         href = a_tag['href']
         texto_link = " ".join(a_tag.get_text().split()).strip()
         
-        # Filtros de segurança: ignora links de sistema do Notion e ruídos
+        # Ignora links do sistema, rodapés e políticas do Notion
         se_valido = (
             texto_link and 
             "Skip to content" not in texto_link and
-            not href.startswith(("/login", "/signup", "https://www.notion.so/product"))
+            not any(x in href for x in ["/login", "/signup", "notion.so/product", "notion.so/desktop"])
         )
         
         if se_valido:
+            # Normaliza links internos
             if href.startswith("/"):
-                href = f"https://notion.so{href}"
+                href = f"https://www.notion.so{href}"
             
-            # TRATAMENTO AVANÇADO DE TÍTULO: 
-            # Se o texto for um link bruto ou contiver IDs pesados, extraímos da URL
+            # Se o texto exibido for a própria URL, limpa para criar um título legível
             if texto_link.startswith(("http://", "https://")) or (len(texto_link) > 30 and "-" in texto_link):
                 parte_limpa = href.split('/')[-1].split('?')[0]
             else:
                 parte_limpa = texto_link
 
-            # Remove o ID hexadecimal de 32 caracteres que o Notion anexa no fim dos nomes
+            # Remove o hash ID de 32 caracteres do Notion
             parte_limpa = re.sub(r'-?[a-f0-9]{32}', '', parte_limpa)
             
-            # Substitui traços/sublinhados por espaços e limpa pontuações repetidas
+            # Limpa traços e espaços
             titulo_limpo = parte_limpa.replace('-', ' ').replace('_', ' ').strip()
             
-            # Capitalização inteligente (Garante siglas como "BD" sempre em maiúsculas)
-            titulo_limpo = " ".join([palavra.upper() if palavra.lower() in ['bd', 'it', 'ai', 'io', 'ui', 'ux'] else palavra.capitalize() for palavra in titulo_limpo.split()])
+            # Capitalização Inteligente
+            titulo_limpo = " ".join([palavra.upper() if palabra.lower() in ['bd', 'it', 'ai', 'io', 'ui', 'ux'] else palabra.capitalize() for palabra in titulo_limpo.split()])
             
-            # Fallback de segurança
             if not titulo_limpo:
                 titulo_limpo = "Subpágina de Conteúdo"
 
-            # Evita links duplicados na lista final
             if not any(item['link'] == href for item in links_encontrados):
                 links_encontrados.append({
                     "titulo": titulo_limpo,
                     "link": href
                 })
-            
+                
     return titulo_texto, links_encontrados
 
 def gerar_pagina_estatica(titulo_projeto, itens):
-    # Favicon em formato SVG Inline (Livro Digital Azul Néon)
     favicon_svg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2338bdf8'%3E%3Cpath d='M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM5 7h5v2H5V7zm0 4h5v2H5v-2zm14 6H5v-2h14v2zm0-4h-7v-2h7v2zm0-4h-7V7h7v2z'/%3E%3C/svg%3E"
 
     html_template = f"""<!DOCTYPE html>
@@ -93,13 +97,10 @@ def gerar_pagina_estatica(titulo_projeto, itens):
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{titulo_projeto} | Central de Conteúdos</title>
     <link rel="icon" type="image/svg+xml" href="{favicon_svg}">
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    
     <style>
         :root {{
             --bg-principal: #0B0F19;
@@ -111,7 +112,6 @@ def gerar_pagina_estatica(titulo_projeto, itens):
             --text-secondary: #9CA3AF;
             --accent-color: #38BDF8;
         }}
-
         body {{
             font-family: 'Inter', sans-serif;
             background-color: var(--bg-principal);
@@ -120,20 +120,17 @@ def gerar_pagina_estatica(titulo_projeto, itens):
             display: flex;
             align-items: center;
         }}
-
         .dashboard-card {{
             background-color: var(--bg-card);
             border: 1px solid var(--border-color);
             border-radius: 16px;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
         }}
-
         .header-accent {{
             color: var(--accent-color);
             font-weight: 700;
             letter-spacing: -0.025em;
         }}
-
         .custom-list-item {{
             background-color: var(--bg-item);
             border: 1px solid var(--border-color);
@@ -142,7 +139,6 @@ def gerar_pagina_estatica(titulo_projeto, itens):
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             margin-bottom: 12px;
         }}
-
         .custom-list-item:hover {{
             background-color: var(--bg-item-hover);
             color: #FFFFFF;
@@ -150,7 +146,6 @@ def gerar_pagina_estatica(titulo_projeto, itens):
             border-color: rgba(56, 189, 248, 0.4);
             box-shadow: 0 4px 12px rgba(56, 189, 248, 0.1);
         }}
-
         .icon-box {{
             background-color: rgba(56, 189, 248, 0.1);
             padding: 8px;
@@ -161,12 +156,10 @@ def gerar_pagina_estatica(titulo_projeto, itens):
             justify-content: center;
             transition: all 0.2s;
         }}
-
         .custom-list-item:hover .icon-box {{
             background-color: var(--accent-color);
             color: var(--bg-principal);
         }}
-        
         .badge-sync {{
             font-size: 0.75rem;
             background-color: rgba(16, 185, 129, 0.1);
@@ -181,7 +174,6 @@ def gerar_pagina_estatica(titulo_projeto, itens):
     <div class="container my-5">
         <div class="row justify-content-center">
             <div class="col-lg-7 col-md-9">
-                
                 <div class="dashboard-card p-4 p-md-5">
                     <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3 mb-4">
                         <div>
@@ -195,9 +187,7 @@ def gerar_pagina_estatica(titulo_projeto, itens):
                             </span>
                         </div>
                     </div>
-
                     <p class="text-secondary small mb-4">Selecione o módulo de apoio abaixo para aceder diretamente à documentação estruturada no Notion:</p>
-                    
                     <div class="list-group list-group-flush">"""
     
     for item in itens:
@@ -218,12 +208,10 @@ def gerar_pagina_estatica(titulo_projeto, itens):
                                 </svg>
                             </div>
                         </a>"""
-                    
+                        
     html_template += """
                     </div>
-                    
                 </div>
-                
             </div>
         </div>
     </div>
@@ -235,13 +223,13 @@ def gerar_pagina_estatica(titulo_projeto, itens):
     print("Sucesso! Painel Premium em modo Dark gerado em 'index.html'.")
 
 if __name__ == "__main__":
-    url_notion = "https://app.notion.com/p/Material-de-Apoio-3e8e3775cf2e46d0a7515f7cf3f7b53f"
+    # IMPORTANTE: Alterada a URL de 'app.notion.com' para 'www.notion.so' para evitar a tela de Login obrigatório
+    url_notion = "https://www.notion.so/Material-de-Apoio-3e8e3775cf2e46d0a7515f7cf3f7b53f"
     
-    # Roda o coletor assíncrono
     html_renderizado = asyncio.run(extrair_dados_notion(url_notion))
     titulo, lista_links = processar_html(html_renderizado)
 
     if lista_links:
         gerar_pagina_estatica(titulo, lista_links)
     else:
-        print("Erro: Nenhum link extraído. Verifica as configurações públicas da página do Notion.")
+        print("Erro: Nenhum link extraído. Certifique-se de que a página está marcada como 'Share to Web' (Pública) no Notion.")
