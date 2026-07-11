@@ -2,9 +2,7 @@ import os
 import json
 import requests
 
-# Puxa o token secreto configurado no GitHub Actions
 NOTION_TOKEN = os.environ.get("NOTION_TOKEN")
-# O ID extraído da sua URL pública do Notion
 PAGE_ID = "39a33f83b4dd80a3a4e3f91ae52e4562" 
 
 def fetch_notion_links():
@@ -23,50 +21,37 @@ def fetch_notion_links():
         return []
         
     data = response.json()
-    links = []
+    itens_lista = []
     
-    # Processa os blocos da página
     for block in data.get('results', []):
         
         # Procura em listas de tarefas (to_do)
         if block['type'] == 'to_do':
+            titulo_completo = ""
+            url_extraida = None
+            
+            # Junta todo o texto daquela linha (com ou sem link)
             for text_obj in block['to_do']['rich_text']:
-                if text_obj.get('href'):
-                    links.append({
-                        'url': text_obj['href'],
-                        'titulo': text_obj['plain_text']
-                    })
+                titulo_completo += text_obj['plain_text']
+                # Se esse pedacinho de texto tiver um link, ele guarda
+                if text_obj.get('href') and not url_extraida:
+                    url_extraida = text_obj['href']
                     
-        # Mantive a busca em parágrafos normais caso você adicione no futuro
-        elif block['type'] == 'paragraph':
-            for text_obj in block['paragraph']['rich_text']:
-                if text_obj.get('href'):
-                    links.append({
-                        'url': text_obj['href'],
-                        'titulo': text_obj['plain_text']
-                    })
+            if titulo_completo.strip():
+                if url_extraida and url_extraida.startswith('/'):
+                    url_extraida = f"https://www.notion.so{url_extraida}"
                     
-        # Mantive os favoritos também por segurança
-        elif block['type'] == 'bookmark':
-            url = block['bookmark']['url']
-            caption_list = block['bookmark'].get('caption', [])
-            titulo = caption_list[0]['plain_text'] if caption_list else url
-            links.append({'url': url, 'titulo': titulo})
+                itens_lista.append({
+                    'url': url_extraida, # Será "null" se não tiver link
+                    'titulo': titulo_completo.strip()
+                })
                     
-    return links
+    return itens_lista
 
 if __name__ == "__main__":
-    links_extraidos = fetch_notion_links()
-    
-    # Remove duplicatas (caso o texto tenha o link quebrado em partes) e limpa espaços vazios
-    links_limpos = []
-    urls_vistas = set()
-    for link in links_extraidos:
-        if link['url'] not in urls_vistas and link['titulo'].strip():
-            links_limpos.append(link)
-            urls_vistas.add(link['url'])
+    itens_extraidos = fetch_notion_links()
     
     with open("links.json", "w", encoding="utf-8") as f:
-        json.dump(links_limpos, f, ensure_ascii=False, indent=4)
+        json.dump(itens_extraidos, f, ensure_ascii=False, indent=4)
         
-    print(f"Sucesso: links.json atualizado com {len(links_limpos)} links.")
+    print(f"Sucesso: links.json atualizado com {len(itens_extraidos)} itens.")
