@@ -76,6 +76,16 @@
             padding: 6px 12px;
             border-radius: 50px;
         }
+        
+        /* Adicionado estilo para o estado de carregamento */
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 0;
+            color: var(--text-secondary);
+        }
     </style>
 </head>
 <body>
@@ -96,131 +106,77 @@
                         </div>
                     </div>
                     <p class="text-secondary small mb-4">Selecione o módulo de apoio abaixo para aceder diretamente à documentação estruturada no Notion:</p>
-                    <div class="list-group list-group-flush">
-                        
-                        <a href="https://www.notion.so/Semana-01-BD-36933f83b4dd8063b2fcce0b405ff218?source=copy_link" target="_blank" class="list-group-item custom-list-item d-flex justify-content-between align-items-center p-3 text-decoration-none">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="text-muted small fw-semibold text-opacity-50 ps-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
-                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
-                                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
-                                    </svg>
-                                </div>
-                                <span class="fw-semibold text-light">Semana 01 - BD</span>
-                            </div>
-                            <div class="icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
-                                </svg>
-                            </div>
-                        </a>
-
-                        <a href="https://app.notion.com/p/Semana-02-BD-37033f83b4dd80df9814c0396b564ff7?source=copy_link" target="_blank" class="list-group-item custom-list-item d-flex justify-content-between align-items-center p-3 text-decoration-none">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="text-muted small fw-semibold text-opacity-50 ps-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
-                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
-                                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
-                                    </svg>
-                                </div>
-                                <span class="fw-semibold text-light">Semana 02 - BD</span>
-                            </div>
-                            <div class="icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
-                                </svg>
-                            </div>
-                        </a>
-
-                        <a href="https://app.notion.com/p/Semana-03-BD-37733f83b4dd80a3bfade06f4dcc1178?source=copy_link" target="_blank" class="list-group-item custom-list-item d-flex justify-content-between align-items-center p-3 text-decoration-none">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="text-muted small fw-semibold text-opacity-50 ps-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
-                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
-                                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
-                                    </svg>
-                                </div>
-                                <span class="fw-semibold text-light">Semana 03 - BD</span>
-                            </div>
-                            <div class="icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
-                                </svg>
-                            </div>
-                        </a>
-
-                        <a href="https://app.notion.com/p/Semana-04-BD-38633f83b4dd80578a8bf4369e269f7c?source=copy_link" target="_blank" class="list-group-item custom-list-item d-flex justify-content-between align-items-center p-3 text-decoration-none">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="text-muted small fw-semibold text-opacity-50 ps-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
-                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
-                                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
-                                    </svg>
-                                </div>
-                                <span class="fw-semibold text-light">Semana 04 - BD</span>
-                            </div>
-                            <div class="icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
-                                </svg>
-                            </div>
-                        </a>
-
-                        <a href="https://app.notion.com/p/Semana-05-BD-38633f83b4dd8060984ef47df306cd3a?source=copy_link" target="_blank" class="list-group-item custom-list-item d-flex justify-content-between align-items-center p-3 text-decoration-none">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="text-muted small fw-semibold text-opacity-50 ps-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
-                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
-                                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
-                                    </svg>
-                                </div>
-                                <span class="fw-semibold text-light">Semana 05 - BD</span>
-                            </div>
-                            <div class="icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
-                                </svg>
-                            </div>
-                        
-                        </a>
- <a href="https://app.notion.com/p/Semana-06-BD-NoSQL-38c33f83b4dd80ceb8bff691d0259f08?source=copy_link" target="_blank" class="list-group-item custom-list-item d-flex justify-content-between align-items-center p-3 text-decoration-none">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="text-muted small fw-semibold text-opacity-50 ps-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
-                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
-                                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
-                                    </svg>
-                                </div>
-                                <span class="fw-semibold text-light">Semana 06 - BD</span>
-                            </div>
-                            <div class="icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
-                                </svg>
-                            </div>
-      <a href="https://app.notion.com/p/Desenvolvimento-1-Python-hands-on-39033f83b4dd808696dfe5ed4604508c?source=copy_link" target="_blank" class="list-group-item custom-list-item d-flex justify-content-between align-items-center p-3 text-decoration-none">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="text-muted small fw-semibold text-opacity-50 ps-1">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
-                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
-                                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
-                                    </svg>
-                                </div>
-                                <span class="fw-semibold text-light">Semana 01 - Desenvolvimento</span>
-                            </div>
-                            <div class="icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
-                                </svg>
-                            </div>
-                        
-                        </a>
-                        
-                        </a>
+                    
+                    <!-- Container onde os links serão inseridos dinamicamente -->
+                    <div class="list-group list-group-flush" id="lista-links">
+                        <div class="loading-container" id="loading-state">
+                            <div class="spinner-border text-info mb-2" role="status"></div>
+                            <span class="small fw-semibold">Consultando Notion...</span>
+                        </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Script de captura e renderização -->
+    <script>
+        // Ao integrar com o seu ambiente (como uma view no Django), substitua esta URL pela rota da sua API local/produção.
+        const API_URL = './links.json';
+
+        async function carregarLinks() {
+            const container = document.getElementById('lista-links');
+            
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) throw new Error('Erro ao buscar dados do backend');
+                
+                const links = await response.json();
+                
+                // Limpa o estado de carregamento
+                container.innerHTML = '';
+
+                if (links.length === 0) {
+                    container.innerHTML = '<div class="text-center text-secondary py-3">Nenhum material encontrado no Notion.</div>';
+                    return;
+                }
+
+                // Renderiza cada link injetando a mesma estrutura HTML/SVG do seu design
+                links.forEach(link => {
+                    const htmlContent = `
+                        <a href="${link.url}" target="_blank" class="list-group-item custom-list-item d-flex justify-content-between align-items-center p-3 text-decoration-none">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="text-muted small fw-semibold text-opacity-50 ps-1">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16">
+                                        <path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/>
+                                        <path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/>
+                                    </svg>
+                                </div>
+                                <span class="fw-semibold text-light">${link.titulo}</span>
+                            </div>
+                            <div class="icon-box">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
+                                </svg>
+                            </div>
+                        </a>
+                    `;
+                    // Insere o HTML diretamente no container
+                    container.insertAdjacentHTML('beforeend', htmlContent);
+                });
+
+            } catch (error) {
+                console.error('Falha na sincronização:', error);
+                container.innerHTML = `
+                    <div class="alert alert-danger text-center mt-3" role="alert" style="background-color: rgba(220, 53, 69, 0.1); border-color: rgba(220, 53, 69, 0.2); color: #ff8787;">
+                        Não foi possível sincronizar os dados. O backend da API está rodando?
+                    </div>`;
+            }
+        }
+
+        // Executa a função imediatamente ao carregar o DOM
+        document.addEventListener('DOMContentLoaded', carregarLinks);
+    </script>
 </body>
 </html>
