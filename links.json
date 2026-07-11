@@ -1,57 +1,57 @@
 [
     {
         "url": "https://www.notion.so/p/39033f83b4dd808696dfe5ed4604508c",
-        "titulo": "Semana 1 (Dias 1 a 2): Introdução à Disciplina de Desenvolvimento Python",
+        "titulo": "Semana 1 (Dias 1 a 2): Preparação de Ambiente e Sintaxe Inicial",
         "marcada": false
     },
     {
         "url": "https://www.notion.so/p/39a33f83b4dd80778aa2d52571cf310b",
-        "titulo": "Semana 2 (Dias 3 a 7): Metodologias Ágeis, Requisitos e Setup de Ambiente",
+        "titulo": "Semana 2 (Dias 3 a 7): Lógica de Programação com Python",
         "marcada": true
     },
     {
         "url": null,
-        "titulo": "Semana 3 (Dias 8 a 12): Versionamento (Git/GitHub) e Fundamentos de Lógica",
+        "titulo": "Semana 3 (Dias 8 a 12): Versionamento e Introdução à Engenharia de Software",
         "marcada": false
     },
     {
         "url": null,
-        "titulo": "Semana 4 (Dias 13 a 17): Modularização, Orientação a Objetos e Boas Práticas (PEP 8)",
+        "titulo": "Semana 4 (Dias 13 a 17): Planejamento, Requisitos e Orientação a Objetos",
         "marcada": false
     },
     {
         "url": null,
-        "titulo": "Semana 5 (Dias 18 a 22): Persistência de Arquivos e Primeiro Contato com Django",
+        "titulo": "Semana 5 (Dias 18 a 22): Boas Práticas, Persistência e Code Review",
         "marcada": false
     },
     {
         "url": null,
-        "titulo": "Semana 6 (Dias 23 a 27): Banco de Dados Relacional e o ORM do Django",
+        "titulo": "Semana 6 (Dias 23 a 27): Framework Web Django e Banco de Dados Relacional",
         "marcada": false
     },
     {
         "url": null,
-        "titulo": "Semana 7 (Dias 28 a 32): Frontend, Formulários e Segurança de Entrada",
+        "titulo": "Semana 7 (Dias 28 a 32): Consultas de Dados, Templates e Frontend",
         "marcada": false
     },
     {
         "url": null,
-        "titulo": "Semana 8 (Dias 33 a 37): Controle de Acesso (Autenticação) e APIs REST",
+        "titulo": "Semana 8 (Dias 33 a 37): Formulários Avançados, Segurança e Autenticação",
         "marcada": false
     },
     {
         "url": null,
-        "titulo": "Semana 9 (Dias 38 a 42): Integração de Sistemas, SSH e Deploy Local na Nuvem",
+        "titulo": "Semana 9 (Dias 38 a 42): APIs REST, Integração de Sistemas e Infraestrutura Linux",
         "marcada": false
     },
     {
         "url": null,
-        "titulo": "Semana 10 (Dias 43 a 47): Proxy Reverso (Nginx), Variáveis de Ambiente e Homologação",
+        "titulo": "Semana 10 (Dias 43 a 47): Deploy de Aplicações e Servidores de Produção",
         "marcada": false
     },
     {
         "url": null,
-        "titulo": "Semana 11 (Dias 48 a 50): Documentação de Fechamento e O Grande Dia",
+        "titulo": "Semana 11 (Dias 48 a 50): Qualidade, Homologação e Entrega",
         "marcada": false
     }
 ]
