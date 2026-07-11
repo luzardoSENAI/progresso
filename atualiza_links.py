@@ -27,14 +27,18 @@ def fetch_notion_links():
     
     # Processa os blocos da página
     for block in data.get('results', []):
-        if block['type'] == 'bookmark':
-            url = block['bookmark']['url']
-            caption_list = block['bookmark'].get('caption', [])
-            titulo = caption_list[0]['plain_text'] if caption_list else url
-            links.append({'url': url, 'titulo': titulo})
-            
+        
+        # Procura em listas de tarefas (to_do)
+        if block['type'] == 'to_do':
+            for text_obj in block['to_do']['rich_text']:
+                if text_obj.get('href'):
+                    links.append({
+                        'url': text_obj['href'],
+                        'titulo': text_obj['plain_text']
+                    })
+                    
+        # Mantive a busca em parágrafos normais caso você adicione no futuro
         elif block['type'] == 'paragraph':
-            # Captura links embutidos no meio de parágrafos normais
             for text_obj in block['paragraph']['rich_text']:
                 if text_obj.get('href'):
                     links.append({
@@ -42,13 +46,27 @@ def fetch_notion_links():
                         'titulo': text_obj['plain_text']
                     })
                     
+        # Mantive os favoritos também por segurança
+        elif block['type'] == 'bookmark':
+            url = block['bookmark']['url']
+            caption_list = block['bookmark'].get('caption', [])
+            titulo = caption_list[0]['plain_text'] if caption_list else url
+            links.append({'url': url, 'titulo': titulo})
+                    
     return links
 
 if __name__ == "__main__":
     links_extraidos = fetch_notion_links()
     
-    # Salva os dados no formato esperado pelo seu frontend
+    # Remove duplicatas (caso o texto tenha o link quebrado em partes) e limpa espaços vazios
+    links_limpos = []
+    urls_vistas = set()
+    for link in links_extraidos:
+        if link['url'] not in urls_vistas and link['titulo'].strip():
+            links_limpos.append(link)
+            urls_vistas.add(link['url'])
+    
     with open("links.json", "w", encoding="utf-8") as f:
-        json.dump(links_extraidos, f, ensure_ascii=False, indent=4)
+        json.dump(links_limpos, f, ensure_ascii=False, indent=4)
         
-    print(f"Sucesso: links.json atualizado com {len(links_extraidos)} links.")
+    print(f"Sucesso: links.json atualizado com {len(links_limpos)} links.")
