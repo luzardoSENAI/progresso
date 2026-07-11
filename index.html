@@ -76,7 +76,6 @@
             padding: 6px 12px;
             border-radius: 50px;
         }
-        /* Estilo para o estado de carregamento */
         .loading-container {
             display: flex;
             flex-direction: column;
@@ -84,6 +83,34 @@
             justify-content: center;
             padding: 2rem 0;
             color: var(--text-secondary);
+        }
+
+        /* --- NOVOS ESTILOS: ITENS CONCLUÍDOS (MARCADOS) --- */
+        .item-concluido {
+            border-left: 4px solid #F97316 !important; /* Laranja na borda esquerda */
+        }
+        .item-concluido .icon-box {
+            background-color: rgba(249, 115, 22, 0.1) !important;
+            color: #F97316 !important;
+        }
+        .custom-list-item.item-concluido:hover {
+            border-color: rgba(249, 115, 22, 0.4) !important;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.1) !important;
+        }
+        .custom-list-item.item-concluido:hover .icon-box {
+            background-color: #F97316 !important;
+            color: var(--bg-principal) !important;
+        }
+        .badge-concluido {
+            font-size: 0.65rem;
+            background-color: rgba(249, 115, 22, 0.1);
+            color: #F97316;
+            padding: 3px 8px;
+            border-radius: 4px;
+            margin-left: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(249, 115, 22, 0.2);
         }
     </style>
 </head>
@@ -104,13 +131,13 @@
                             </span>
                         </div>
                     </div>
-                    <p class="text-secondary small mb-4">Selecione o módulo de apoio abaixo para aceder diretamente à documentação estruturada no Notion:</p>
+                    <p class="text-secondary small mb-4">Acompanhe o cronograma abaixo e acesse a documentação estruturada no Notion das semanas já liberadas:</p>
                     
                     <!-- Container onde os links serão inseridos dinamicamente -->
                     <div class="list-group list-group-flush" id="lista-links">
                         <div class="loading-container" id="loading-state">
                             <div class="spinner-border text-info mb-2" role="status"></div>
-                            <span class="small fw-semibold">Consultando base de dados...</span>
+                            <span class="small fw-semibold">Consultando cronograma no Notion...</span>
                         </div>
                     </div>
 
@@ -123,21 +150,16 @@
     <script>
         const API_URL = './links.json';
 
-        // Função para escolher o ícone baseado no título do material
+        // Escolhe o ícone dinamicamente baseado no texto
         function getIconSVG(titulo) {
             const tituloMin = titulo.toLowerCase();
             
-            // Ícone do Python (se a palavra python estiver no título)
-            if (tituloMin.includes('python')) {
+            if (tituloMin.includes('python') || tituloMin.includes('django')) {
                 return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 448 512"><path d="M439.8 200.5c-7.7-30.9-22.3-54.2-53.4-54.2h-40.1v47.4c0 36.8-31.2 67.8-66.8 67.8H172.7c-29.2 0-53.4 25-53.4 54.3v101.8c0 29 25.2 46 53.4 54.3 33.8 9.9 66.3 11.7 106.8 0 26.9-7.8 53.4-23.5 53.4-54.3v-40.7H226.2v-13.6h160.2c31.1 0 42.6-21.7 53.4-54.2 11.2-33.5 10.7-65.7 0-108.6zM286.2 404c11.1 0 20.1 9.1 20.1 20.3 0 11.3-9 20.4-20.1 20.4-11 0-20.1-9.2-20.1-20.4 .1-11.3 9.1-20.3 20.1-20.3zM167.8 248.1h106.8c29.7 0 53.4-24.5 53.4-54.3V91.9c0-29-24.4-50.7-53.4-55.6-35.8-5.9-74.7-5.6-106.8 .1-45.2 8-53.4 24.7-53.4 55.6v40.7h106.9v13.6h-147c-31.1 0-58.3 18.7-66.8 54.2-9.8 40.7-10.2 66.1 0 108.6 7.6 31.6 25.7 54.2 56.8 54.2H101v-48.8c0-35.3 30.5-66.4 66.8-66.4zm-6.7-142.6c-11.1 0-20.1-9.1-20.1-20.3 0-11.3 9-20.4 20.1-20.4 11 0 20.1 9.2 20.1 20.4s-9 20.3-20.1 20.3z"/></svg>`;
             }
-            
-            // Ícone de Banco de Dados (se bd ou sql estiver no título)
-            if (tituloMin.includes('bd') || tituloMin.includes('sql')) {
+            if (tituloMin.includes('bd') || tituloMin.includes('banco') || tituloMin.includes('sql')) {
                 return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-database" viewBox="0 0 16 16"><path d="M4.318 1.968c.85-.295 1.93-.468 3.682-.468s2.83.173 3.682.468C12.532 2.27 13 2.72 13 3.25c0 .53-.468.98-1.318 1.282C10.83 4.827 9.75 5 8 5s-2.83-.173-3.682-.468C3.468 4.23 3 3.78 3 3.25c0-.53.468-.98 1.318-1.282M8 6c-1.75 0-2.83-.173-3.682-.468C3.468 5.23 3 4.78 3 4.25v1.5c0 .53.468.98 1.318 1.282C5.17 7.327 6.25 7.5 8 7.5s2.83-.173 3.682-.468C12.532 6.73 13 6.28 13 5.75v-1.5c0 .53-.468.98-1.318 1.282C10.83 5.827 9.75 6 8 6"/><path d="M4.318 4.468C5.17 4.763 6.25 4.938 8 4.938s2.83-.175 3.682-.47C12.532 4.17 13 3.72 13 3.188c0-.53-.468-.98-1.318-1.28C10.83 1.61 9.75 1.438 8 1.438s-2.83.172-3.682.47C3.468 2.208 3 2.658 3 3.188c0 .53.468.98 1.318 1.28M8 8.5c-1.75 0-2.83-.173-3.682-.468C3.468 7.73 3 7.28 3 6.75v1.5c0 .53.468.98 1.318 1.282C5.17 9.827 6.25 10 8 10s2.83-.173 3.682-.468C12.532 9.23 13 8.78 13 8.25v-1.5c0 .53-.468.98-1.318 1.282C10.83 8.327 9.75 8.5 8 8.5m0 2.5c-1.75 0-2.83-.173-3.682-.468C3.468 10.23 3 9.78 3 9.25v1.5c0 .53.468.98 1.318 1.282C5.17 12.327 6.25 12.5 8 12.5s2.83-.173 3.682-.468C12.532 11.73 13 11.28 13 10.75v-1.5c0 .53-.468.98-1.318 1.282C10.83 10.827 9.75 11 8 11"/><path d="M4.318 11.968C5.17 12.263 6.25 12.438 8 12.438s2.83-.175 3.682-.47C12.532 11.67 13 11.22 13 10.688c0-.53-.468-.98-1.318-1.28C10.83 9.11 9.75 8.938 8 8.938s-2.83.172-3.682.47C3.468 9.708 3 10.158 3 10.688c0 .53.468.98 1.318 1.28"/></svg>`;
             }
-
-            // Ícone de documento (Padrão para outros links)
             return `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-text" viewBox="0 0 16 16"><path d="M5.5 7a.5.5 0 0 0 0 1h5a.5.5 0 0 0 0-1zM5 9.5a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5m0 2a.5.5 0 0 1 .5-.5h5a.5.5 0 0 1 0 1h-5a.5.5 0 0 1-.5-.5"/><path d="M14 4.5V14a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h5.5zm-3 0A1.5 1.5 0 0 1 9.5 3V1H4a1 1 0 0 0-1 1v12a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1V4.5z"/></svg>`;
         }
 
@@ -145,52 +167,71 @@
             const container = document.getElementById('lista-links');
             
             try {
-                // Previne cache do navegador forçando a busca do JSON mais recente gerado pelo Action
+                // Fetch buscando dados locais e ignorando cache
                 const response = await fetch(`${API_URL}?t=${new Date().getTime()}`);
-                if (!response.ok) throw new Error('Erro ao buscar dados do backend');
+                if (!response.ok) throw new Error('Erro ao buscar dados do cronograma');
                 
                 const links = await response.json();
-                
-                // Limpa o estado de carregamento
                 container.innerHTML = '';
 
                 if (links.length === 0) {
-                    container.innerHTML = '<div class="text-center text-secondary py-3">Nenhum material encontrado no Notion.</div>';
+                    container.innerHTML = '<div class="text-center text-secondary py-3">Cronograma vazio. Verifique o Notion.</div>';
                     return;
                 }
 
-                // Renderiza cada link injetando a estrutura HTML/SVG dinamicamente
-                links.forEach(link => {
-                    const iconeDinamico = getIconSVG(link.titulo);
+                links.forEach(item => {
+                    let htmlContent = '';
+                    const iconeDinamico = getIconSVG(item.titulo);
+                    
+                    // Lógica para itens marcados (checkbox [x] no Notion)
+                    const classeConcluido = item.marcada ? 'item-concluido' : '';
+                    const tagConcluido = item.marcada ? '<span class="badge-concluido">Conteúdo Liberado</span>' : '';
 
-                    const htmlContent = `
-                        <a href="${link.url}" target="_blank" class="list-group-item custom-list-item d-flex justify-content-between align-items-center p-3 text-decoration-none">
-                            <div class="d-flex align-items-center gap-3">
-                                <div class="text-muted small fw-semibold text-opacity-50 ps-1">
-                                    ${iconeDinamico}
+                    // SE TIVER LINK (Clicável)
+                    if (item.url) {
+                        htmlContent = `
+                            <a href="${item.url}" target="_blank" class="list-group-item custom-list-item ${classeConcluido} d-flex justify-content-between align-items-center p-3 text-decoration-none">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="text-muted small fw-semibold text-opacity-50 ps-1">
+                                        ${iconeDinamico}
+                                    </div>
+                                    <span class="fw-semibold text-light">${item.titulo} ${tagConcluido}</span>
                                 </div>
-                                <span class="fw-semibold text-light">${link.titulo}</span>
+                                <div class="icon-box">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
+                                    </svg>
+                                </div>
+                            </a>
+                        `;
+                    } 
+                    // SE NÃO TIVER LINK (Apenas texto)
+                    else {
+                        htmlContent = `
+                            <div class="list-group-item custom-list-item ${classeConcluido} d-flex justify-content-between align-items-center p-3 text-decoration-none" style="cursor: default; opacity: 0.65;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="text-muted small fw-semibold text-opacity-50 ps-1">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clock" viewBox="0 0 16 16"><path d="M8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 1 0 8 0a8 8 0 0 0 0 16zm7-8A7 7 0 1 1 1 8a7 7 0 0 1 14 0z"/></svg>
+                                    </div>
+                                    <span class="fw-semibold text-light">${item.titulo} ${tagConcluido}</span>
+                                </div>
+                                <div style="color: var(--text-secondary); font-size: 0.75rem; background: rgba(255,255,255,0.05); padding: 4px 10px; border-radius: 6px;">
+                                    Em breve
+                                </div>
                             </div>
-                            <div class="icon-box">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-arrow-up-right" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M14 2.5a.5.5 0 0 0-.5-.5h-6a.5.5 0 0 0 0 1h4.793L2.146 13.146a.5.5 0 0 0 .708.708L13 3.707V8.5a.5.5 0 0 0 1 0z"/>
-                                </svg>
-                            </div>
-                        </a>
-                    `;
+                        `;
+                    }
+
                     container.insertAdjacentHTML('beforeend', htmlContent);
                 });
 
             } catch (error) {
-                console.error('Falha na sincronização:', error);
-                container.innerHTML = `
-                    <div class="alert alert-danger text-center mt-3" role="alert" style="background-color: rgba(220, 53, 69, 0.1); border-color: rgba(220, 53, 69, 0.2); color: #ff8787;">
-                        Não foi possível carregar os dados. Verifique a conexão.
-                    </div>`;
+                console.error('Falha:', error);
+                container.innerHTML = `<div class="alert alert-danger text-center mt-3">Não foi possível carregar o cronograma. Tente novamente mais tarde.</div>`;
             }
         }
 
-        // Executa a função imediatamente ao carregar o DOM
+        // Roda o script assim que a página é carregada
         document.addEventListener('DOMContentLoaded', carregarLinks);
     </script>
 </body>
