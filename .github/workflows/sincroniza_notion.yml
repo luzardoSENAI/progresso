@@ -1,0 +1,39 @@
+name: Sincronizar Links do Notion
+
+on:
+  schedule:
+    # Roda automaticamente a cada 2 horas (sintaxe cron)
+    - cron: '0 */2 * * *'
+  workflow_dispatch:
+    # Permite que você clique em "Run workflow" manualmente no GitHub
+
+jobs:
+  atualiza-json:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Dá permissão para o bot escrever no repositório
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar ambiente Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Instalar biblioteca requests
+        run: pip install requests
+
+      - name: Executar script de extração
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+        run: python atualiza_links.py
+
+      - name: Commit e Push (se houver mudanças)
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add links.json
+          # Compara se houve mudança. Se sim, commita e faz o push.
+          git diff --quiet && git diff --staged --quiet || (git commit -m "chore: atualiza lista de links via Notion API" && git push)
