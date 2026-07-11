@@ -25,15 +25,15 @@ def fetch_notion_links():
     
     for block in data.get('results', []):
         
-        # Procura em listas de tarefas (to_do)
         if block['type'] == 'to_do':
             titulo_completo = ""
             url_extraida = None
             
-            # Junta todo o texto daquela linha (com ou sem link)
+            # Lê o status da checkbox (True se marcada, False se desmarcada)
+            esta_marcada = block['to_do'].get('checked', False)
+            
             for text_obj in block['to_do']['rich_text']:
                 titulo_completo += text_obj['plain_text']
-                # Se esse pedacinho de texto tiver um link, ele guarda
                 if text_obj.get('href') and not url_extraida:
                     url_extraida = text_obj['href']
                     
@@ -42,8 +42,9 @@ def fetch_notion_links():
                     url_extraida = f"https://www.notion.so{url_extraida}"
                     
                 itens_lista.append({
-                    'url': url_extraida, # Será "null" se não tiver link
-                    'titulo': titulo_completo.strip()
+                    'url': url_extraida,
+                    'titulo': titulo_completo.strip(),
+                    'marcada': esta_marcada # Adicionamos essa nova informação!
                 })
                     
     return itens_lista
@@ -54,4 +55,4 @@ if __name__ == "__main__":
     with open("links.json", "w", encoding="utf-8") as f:
         json.dump(itens_extraidos, f, ensure_ascii=False, indent=4)
         
-    print(f"Sucesso: links.json atualizado com {len(itens_extraidos)} itens.")
+    print(f"Sucesso: links.json atualizado.")
